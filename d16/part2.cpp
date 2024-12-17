@@ -53,12 +53,12 @@ int getCheapestPathCost(vector<int> &startPos, vector<int> &endPos) {
         pq.pop();
         auto [curX, curY] = decodeIndex(curLocation); 
 
-        if( curCost > dist[curX][curY][curDirection]) {
+        if( curCost > dist[curX][curY][curDirection] || curCost > finalAns) {
             continue;
         }
 
         if( curX == endPos[0] && curY == endPos[1]) {
-            return curCost;
+            finalAns = curCost;
         }
 
         for(int newDirection = 0; newDirection < 4; ++newDirection) {
@@ -75,7 +75,7 @@ int getCheapestPathCost(vector<int> &startPos, vector<int> &endPos) {
                 case '.': 
                 case 'E': {
                     int newCost = dist[curX][curY][curDirection] + 1 + rotationCost;
-                    if( dist[newX][newY][newDirection] > newCost) {
+                    if( dist[newX][newY][newDirection] >= newCost) {
                         dist[newX][newY][newDirection] = newCost;
                         pq.push({newCost, encodeIndex(newX, newY), newDirection});
                     }
@@ -86,7 +86,7 @@ int getCheapestPathCost(vector<int> &startPos, vector<int> &endPos) {
             }
         }
     }
-    return -1;
+    return finalAns;
 }
 
 int getOppositeDirection(int curDirection) {
