@@ -75,8 +75,7 @@ int applyOperation(int opCode, int operand) {
         default:
             throw "Unknown opcode";
     }
-    // cout << a  << "," << b << "," << c << " " << instructionPointer << endl;
-    return -1; // indicates no jump
+    return -1;
 }
 
 int main() {
