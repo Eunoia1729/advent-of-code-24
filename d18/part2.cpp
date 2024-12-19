@@ -28,6 +28,7 @@ bool inRange(int curX, int curY) {
     return 0 <= curX && curX < N && 
            0 <= curY && curY < N;
 }
+
 int getShortestPathCostByBfs() {
     vis = vector<vector<bool>>(N, vector<bool>(N, false));
     queue<vector<int>> st;
