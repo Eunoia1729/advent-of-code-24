@@ -1,86 +1,59 @@
 #include<bits/stdc++.h>
 using namespace std;
 
-/**
- * The adv instruction (opcode 0) performs division. The numerator is the value in the A register. The denominator is found by raising 2 to the power of the instruction's combo operand. (So, an operand of 2 would divide A by 4 (2^2); an operand of 5 would divide A by 2^B.) The result of the division operation is truncated to an integer and then written to the A register.
+vector<long long> potentialAnswers;
 
-The bxl instruction (opcode 1) calculates the bitwise XOR of register B and the instruction's literal operand, then stores the result in register B.
-
-The bst instruction (opcode 2) calculates the value of its combo operand modulo 8 (thereby keeping only its lowest 3 bits), then writes that value to the B register.
-
-The jnz instruction (opcode 3) does nothing if the A register is 0. However, if the A register is not zero, it jumps by setting the instruction pointer to the value of its literal operand; if this instruction jumps, the instruction pointer is not increased by 2 after this instruction.
-
-The bxc instruction (opcode 4) calculates the bitwise XOR of register B and register C, then stores the result in register B. (For legacy reasons, this instruction reads an operand but ignores it.)
-
-The out instruction (opcode 5) calculates the value of its combo operand modulo 8, then outputs that value. (If a program outputs multiple values, they are separated by commas.)
-
-The bdv instruction (opcode 6) works exactly like the adv instruction except that the result is stored in the B register. (The numerator is still read from the A register.)
-
-The cdv instruction (opcode 7) works exactly like the adv instruction except that the result is stored in the C register. (The numerator is still read from the A register.)
-
- */
-int a = 64854237, b = 0, c = 0, instructionPointer = 0;
-
-
-int getComboOperand(int x) {
-    switch(x) {
-        case 0:
-        case 1:
-        case 2:
-        case 3:
-            return x;
-        case 4:
-            return a;
-        case 5:
-            return b;
-        case 6:
-            return c;
-        case 7:
-            throw "error";
+/** FORMATTING UTILS START HERE */
+string numberAsBinaryString(long long x) {
+    string s1, s = bitset<64>(x).to_string();
+    reverse(s.begin(), s.end());
+    for(int i = 0; i + 3 < s.size(); i+=3) {
+        s1 = s1 + s.substr(i, 3) + " ";
     }
+    while(s1.back() == ' ' || s1.back() == '0') {
+        s1.pop_back();    
+    }
+    reverse(s1.begin(), s1.end());
+    return s1;
+}
+/** FORMATTING UTILS END HERE */
+
+void dfs(stack<long long> &st, long long ans) {
+    if( st.empty()) {
+        potentialAnswers.push_back(ans);
+        return;
+    }
+    long long a, rhs = st.top();
+    st.pop();
+    for(long long b = 0; b <= 7; ++b) {
+        a = (ans * 8) + b;
+        // (last 3 digits of a) ^ b'100' ^ ( a / 2 ^^ ( (last 3 digits of a) ^ b'001' ) )
+        if( (b ^ 4 ^ ( a >> (b ^ 1))) % 8 == rhs) {
+            dfs(st, a);
+        }
+    }
+    st.push(rhs);
 }
 
-int applyOperation(int opCode, int operand) {
-    int result;
-    switch(opCode) {
-        case 0: // adv
-            result = a / pow(2, getComboOperand(operand));
-            a = static_cast<int>(result);
-            break;
-        case 1: // bxl
-            b ^= operand;
-            break;
-        case 2: // bst
-            b = getComboOperand(operand) % 8;
-            break;
-        case 3: // jnz
-            if (a != 0) {
-                instructionPointer = operand - 2; // set instruction pointer to operand   
-            }
-            break;
-        case 4: // bxc
-            b ^= c;
-            break;
-        case 5: // out
-            cout << (getComboOperand(operand) % 8) << ",";
-            break;
-        case 6: // bdv
-            result = a / pow(2, getComboOperand(operand));
-            b = static_cast<int>(result);
-            break;
-        case 7: // cdv
-            result = a / pow(2, getComboOperand(operand));
-            c = static_cast<int>(result);
-            break;
-        default:
-            throw "Unknown opcode";
-    }
-    return -1;
-}
 
 int main() {
-    vector<int> v = {2,4,1,1,7,5,1,5,4,0,5,5,0,3,3,0};
-    for(; instructionPointer < v.size(); instructionPointer +=2) {
-        applyOperation(v[instructionPointer], v[instructionPointer + 1]);   
+    vector<int> v = {2, 4, 1, 1, 7, 5, 1, 5, 4, 0, 5, 5, 0, 3, 3, 0};
+    stack<long long> st;
+    for(auto &p: v) {
+        st.push(p);
     }
+    dfs(st, 0L);
+    cout << potentialAnswers[0] << endl;
 }
+
+/*
+ * ROUGH SKETCH OF THE ALGORITHM:
+ * b = last 3 digits of a, 
+ * b = (last 3 digits of a)^001(bits), 
+ * c = a / 2^^( (last 3 digits of a)^001(bits) ), 
+ * b = (last 3 digits of a)^100(bits),  
+ * b = (last 3 digits of a) ^100(bits) ^ ( a / 2^^( (last 3 digits of a)^001(bits) ) ),  
+ * print(b % 8), 
+ * a = a / 8, 
+ * jump to start
+ */
