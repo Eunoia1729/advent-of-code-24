@@ -1,8 +1,6 @@
 #include<bits/stdc++.h>
 using namespace std;
 
-vector<long long> potentialAnswers;
-
 /** FORMATTING UTILS START HERE */
 string numberAsBinaryString(long long x) {
     string s1, s = bitset<64>(x).to_string();
@@ -18,6 +16,7 @@ string numberAsBinaryString(long long x) {
 }
 /** FORMATTING UTILS END HERE */
 
+vector<long long> potentialAnswers;
 void dfs(stack<long long> &st, long long ans) {
     if( st.empty()) {
         potentialAnswers.push_back(ans);
@@ -35,7 +34,6 @@ void dfs(stack<long long> &st, long long ans) {
     st.push(rhs);
 }
 
-
 int main() {
     vector<int> v = {2, 4, 1, 1, 7, 5, 1, 5, 4, 0, 5, 5, 0, 3, 3, 0};
     stack<long long> st;
@@ -48,12 +46,12 @@ int main() {
 
 /*
  * ROUGH SKETCH OF THE ALGORITHM:
- * b = last 3 digits of a, 
- * b = (last 3 digits of a)^001(bits), 
- * c = a / 2^^( (last 3 digits of a)^001(bits) ), 
- * b = (last 3 digits of a)^100(bits),  
- * b = (last 3 digits of a) ^100(bits) ^ ( a / 2^^( (last 3 digits of a)^001(bits) ) ),  
- * print(b % 8), 
- * a = a / 8, 
+ * b = last 3 digits of a
+ * b = (last 3 digits of a) ^ 0b001
+ * c = a / (1 << (b ^ 0b001))
+ * b = (last 3 digits of a) ^ 0b100
+ * b = (last 3 digits of a) ^ 0b100 ^ (a / (1 << (b ^ 0b001)))
+ * print(b % 8)
+ * a = a >> 3
  * jump to start
  */
