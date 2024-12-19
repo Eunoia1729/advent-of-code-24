@@ -37,7 +37,7 @@ void getInput(vector<string> &patterns, vector<string> &designs) {
  * INPUT HELPERS END HERE
  */
 
-long long isDesignPossible(string design, vector<string> &patterns) {
+long long numPossibleCombinations(string design, vector<string> &patterns) {
     int n = design.size();
     vector<long long> dp(n, 0);
     for(int i = 0; i < n; ++i) {
@@ -46,16 +46,15 @@ long long isDesignPossible(string design, vector<string> &patterns) {
                 continue;
             }
             bool isPatternMatch = design.substr(i + 1 - p.size(), p.size()) == p;
-            if( i + 1 == p.size() && isPatternMatch) {
-                dp[i] += 1;
+            if( i + 1 == p.size()) {
+                dp[i] += isPatternMatch;
             }
-            if(isPatternMatch) {
+            else if(isPatternMatch) {
                 dp[i] += dp[i - p.size()];
             }
         }
     }
     return dp[n - 1];
-
 }
 
 int main() {
@@ -64,7 +63,7 @@ int main() {
 
     long long count = 0;
     for(auto &d: designs) {
-        count += isDesignPossible(d, patterns);
+        count += numPossibleCombinations(d, patterns);
     }
     cout << count << endl;
     return 0;
