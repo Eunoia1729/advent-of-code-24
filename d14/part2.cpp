@@ -63,8 +63,7 @@ int calculateScore(vector<string> &grid) {
     return ans;
 }
 
-
-vector<pair<int, int>> updateFinalPositions(vector<pair<pair<int,int>,pair<int,int>>> &initialVectors, int timeElapsed) {
+vector<pair<int, int>> getFinalPositions(vector<pair<pair<int,int>,pair<int,int>>> &initialVectors, int timeElapsed) {
     vector<pair<int, int>> finalPositions;
     for(auto &p: initialVectors) {
         auto [x, y] = p.first;
@@ -85,10 +84,9 @@ int main() {
 
     inputRobotVectors(input);
     
-    int bestTime = -1;
-    int score, maxx = INT_MIN;
+    int bestTime = -1, score, maxx = INT_MIN;
     for(int t = 0; t < 50000; ++t) {
-        finalPositions = updateFinalPositions(input, t);
+        finalPositions = getFinalPositions(input, t);
         grid = getNewGrid(finalPositions);
         score = calculateScore(grid);
         if(score > maxx) {
@@ -96,7 +94,7 @@ int main() {
             bestTime = t;
         }
     }
-    finalPositions = updateFinalPositions(input, bestTime);
+    finalPositions = getFinalPositions(input, bestTime);
     grid = getNewGrid(finalPositions);
     displayGrid(grid);
     cout << "TimeTaken: " << bestTime << " Score: " << maxx << endl;
