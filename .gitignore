@@ -1,0 +1,6 @@
+# Compiled solutions (build with: g++ -O2 -std=c++17 -o partN partN.cpp)
+d*/part1
+d*/part2
+d*/part2_all
+a.out
+*.o
